@@ -1,0 +1,19 @@
+{
+  "name": "checkleekduck",
+  "version": "1.0.0",
+  "description": "Checks leek duck once a day for events in pokemon go",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "dev": "ts-node index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^20.9.0",
+    "mongoose": "^8.0.1",
+    "puppeteer": "^21.5.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}
