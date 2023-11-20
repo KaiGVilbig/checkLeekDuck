@@ -12,4 +12,4 @@ USER builder
 
 COPY /buildRPM.sh /
 
-ENTRYPOINT "/bin/sh"
+ENTRYPOINT /buildRPM.sh

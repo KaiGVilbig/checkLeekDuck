@@ -1,4 +1,5 @@
-rmdir leek-duck-0.0.1 /s /q
+docker build --cache-from rpmbuilder -t rpmbuilder .
+rmdir shared /s /q
 
 mkdir leek-duck-0.0.1\node_modules
 xcopy /s node_modules leek-duck-0.0.1\node_modules
@@ -20,4 +21,5 @@ copy leek-duck.service shared\
 
 docker run -it -v E:\Projects\Home_auto\checkLeekDuck\shared:/shared rpmbuilder
 
-rmdir shared /s /q
+rmdir leek-duck-0.0.1 /s /q
+del leek-duck-0.0.1.tar.gz

@@ -10,3 +10,5 @@ cp /shared/leek-duck.spec /home/builder/rpmbuild/SPECS/
 cd $rpmbuilddir
 
 rpmbuild -bb SPECS/leek-duck.spec
+
+mv $rpmbuilddir/RPMS/noarch/*.rpm /shared/
