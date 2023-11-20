@@ -7,10 +7,15 @@ License:    ISC
 Source0:    %{name}-%{version}.tar.gz
 
 Requires:   Node
+BuildArch:  noarch
 
 %prep
 %setup -q
 
 %install
+mkdir -p %{buildroot}/%{_bindir}
+
+install -m 0775 %{name} %{buildroot}%{_bindir}/%{name}
 
 %files
+%{_bindir}/%{name}

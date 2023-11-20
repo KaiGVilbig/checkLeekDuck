@@ -15,4 +15,6 @@ RUN mkdir -p /home/builder/rpmbuild/SOURCES
 RUN mkdir -p /home/builder/rpmbuild/SPECS
 RUN mkdir -p /home/builder/rpmbuild/SRPMS
 
+COPY buildRPM.sh /buildRPM.sh
+
 ENTRYPOINT "/bin/sh"

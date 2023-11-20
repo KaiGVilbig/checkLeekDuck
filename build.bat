@@ -1,16 +1,20 @@
-rmdir leek-duck /s /q
+@REM rmdir leek-duck /s /q
 
-mkdir leek-duck\node_modules
-xcopy /s node_modules leek-duck\node_modules
-copy connectMango.tsx leek-duck\
-copy dbOps.ts leek-duck\
-copy duckInferface.ts leek-duck\
-copy duckModel.tsx leek-duck\
-copy index.ts leek-duck\
-copy package-lock.json leek-duck\
-copy package.json leek-duck\
-copy tsconfig.json leek-duck\
+@REM mkdir leek-duck\node_modules
+@REM xcopy /s node_modules leek-duck\node_modules
+@REM copy connectMango.tsx leek-duck\
+@REM copy dbOps.ts leek-duck\
+@REM copy duckInferface.ts leek-duck\
+@REM copy duckModel.tsx leek-duck\
+@REM copy index.ts leek-duck\
+@REM copy package-lock.json leek-duck\
+@REM copy package.json leek-duck\
+@REM copy tsconfig.json leek-duck\
 
-tar -czvf leek-duck-0.0.1.tar.gz leek-duck
+@REM tar -czvf leek-duck-0.0.1.tar.gz leek-duck
+mkdir shared
+copy leek-duck-0.0.1.tar.gz shared\
 
-docker run -it rpmbuild -v /leek-duck-.0.01.tar.gz:/
+docker run -it -v E:\Projects\Home_auto\checkLeekDuck\shared:/shared rpmbuild
+
+rmdir shared /s /q
