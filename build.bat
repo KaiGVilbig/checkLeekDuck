@@ -19,7 +19,7 @@ copy leek-duck-0.0.1.tar.gz shared\
 copy leek-duck.spec shared\
 copy leek-duck.service shared\
 
-docker run -it -v E:\Projects\Home_auto\checkLeekDuck\shared:/shared rpmbuilder
+docker run --rm -it -v E:\Projects\Home_auto\checkLeekDuck\shared:/shared rpmbuilder
 
 rmdir leek-duck-0.0.1 /s /q
 del leek-duck-0.0.1.tar.gz
