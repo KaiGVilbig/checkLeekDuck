@@ -9,7 +9,10 @@ Source0:    %{name}-%{version}.tar.gz
 Requires:   nodejs dos2unix
 BuildArch:  noarch
 
-%prep
+%description
+LeekDuck scraper
+
+%pre
 useradd --system leek-duck
 groupadd auto-services
 usermod -a -G auto-services leek-duck

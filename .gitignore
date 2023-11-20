@@ -1,4 +1,5 @@
 node_modules
 package-lock.json
-leek-duck
+leek-duck-0.0.1
+shared
 *.gz

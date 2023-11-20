@@ -1,20 +1,15 @@
-FROM alpine:3.18.4
+FROM centos
 
-RUN apk update
-RUN apk add --no-cache bash
-RUN apk add rpm-dev
+RUN dnf --disablerepo '*' --enablerepo extras swap centos-linux-repos centos-stream-repos -y
+RUN dnf distro-sync -y
 
-RUN addgroup --system rpm
-RUN adduser --system builder --ingroup rpm
+RUN dnf update -y
+RUN dnf upgrade -y
+RUN dnf install rpm-build rpm-devel rpmdevtools dos2unix -y
+RUN useradd builder
 
-USER builder:rpm
+USER builder
 
-RUN mkdir -p /home/builder/rpmbuild/BUILD
-RUN mkdir -p /home/builder/rpmbuild/RPMS
-RUN mkdir -p /home/builder/rpmbuild/SOURCES
-RUN mkdir -p /home/builder/rpmbuild/SPECS
-RUN mkdir -p /home/builder/rpmbuild/SRPMS
-
-COPY buildRPM.sh /buildRPM.sh
+COPY /buildRPM.sh /
 
 ENTRYPOINT "/bin/sh"
