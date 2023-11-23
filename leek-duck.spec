@@ -43,6 +43,8 @@ systemctl daemon-reload
 systemctl enable leek-duck
 systemctl start leek-duck
 
+npm install -g ts-node || :
+
 %preun
 systemctl stop leek-duck
 systemctl disable leek-duck

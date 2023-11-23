@@ -6,7 +6,7 @@ Type=simple
 User=leek-duck
 Group=auto-services
 WorkingDirectory=/opt/auto/LeekDuck/
-ExecStart=/usr/bin/ts-node /opt/auto/LeekDuck/index.ts
+ExecStart=/usr/local/bin/ts-node /opt/auto/LeekDuck/index.ts
 Restart=on-failure
 
 [Install]

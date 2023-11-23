@@ -36,6 +36,7 @@ const main = async () => {
     await db(formatted);
 }
 
+main()
 /**
  * Scheduled job to execute once every day at 7:00am local time, whatever timezone the system is online
  * To change the timezone to a specific timezone, at the bottom of the cron funciton where the }) is located, 
