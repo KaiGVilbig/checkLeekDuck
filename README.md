@@ -6,10 +6,12 @@
 - Uses a [Cronjob](https://en.wikipedia.org/wiki/Cron) to execute once every day
     - Only fetch once a day as to not overwhelm [LeekDuck](https://leekduck.com)
     - Only checking once a day is necessary since events aren't being announced every minute
-- Can be built as an [RPM](https://en.wikipedia.org/wiki/RPM_Package_Manager) to install to Linux
-- RPMs will be built as a [Linux Service](https://www.imaginelinux.com/service-in-linux/) and will run on boot and restart on failure
+- Can be built as an [RPM](https://en.wikipedia.org/wiki/RPM_Package_Manager) to install to RPM based Linux distributions
+- Can also be build as a [Debian package](https://en.wikipedia.org/wiki/Deb_(file_format)) to install on debian based distributions
+- RPMs and Deb packages will be built as a [Linux Service](https://www.imaginelinux.com/service-in-linux/) and will run on boot and restart on failure
 - Uses [Docker](https://aws.amazon.com/docker/) and [CentOS](https://www.redhat.com/en/topics/linux/what-is-centos) to build the RPM
-- The /tests directory contains a test index.ts file for testing the building, installing, running and unsinstalling the RPM package as a service
+- Uses Docker and [Ubuntu](https://en.wikipedia.org/wiki/Ubuntu) to build the .deb
+- The /tests directory contains a test index.ts file for testing the building, installing, running and unsinstalling the RPM and Debian packages as a service
 
 ---
 

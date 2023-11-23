@@ -1,0 +1,5 @@
+#!/bin/bash
+
+useradd --system leek-duck
+groupadd auto-services
+usermod -a -G auto-services leek-duck

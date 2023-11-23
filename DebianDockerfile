@@ -1,0 +1,11 @@
+FROM ubuntu:latest
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+    sudo \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY /buildDebian.sh /
+
+ENTRYPOINT /buildDebian.sh

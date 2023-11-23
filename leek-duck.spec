@@ -50,6 +50,7 @@ systemctl stop leek-duck
 systemctl disable leek-duck
 
 %postun
+userdel -r leek-duck
 if [ "$1" = "0" ]; then
     rm -rf /opt/auto/LeekDuck
     rm -f /etc/systemd/system/leek-duck.service
