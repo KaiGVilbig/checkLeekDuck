@@ -6,45 +6,54 @@ export default async function dbOps(ducks: Array<DuckInt>) {
 
     let db = await connectMongo()
 
-    // Get data
-    const gotDucks = await Duck.find({})
-    const formattedDucks: Array<DuckInt> = gotDucks;
-    const toCompare: Array<String> = formattedDucks.map((fd) => (fd.infoLink));
-    const toGetOld: Array<String> = ducks.map((d) => (d.infoLink));
+    const ops = async () => {
 
-    // Compare with current data
-    let newDucks: Array<DuckInt> = [];
-    ducks.map((d: DuckInt) => {
-        if (!toCompare.includes(d.infoLink)) {
-            newDucks.push(d)
-        }
-    })
-
-    // send new data
-    if (newDucks.length > 0) {
-        let key: string = "_id"
+        // Get data
+        const gotDucks = await Duck.find({})
+        const formattedDucks: Array<DuckInt> = gotDucks;
+        const toCompare: Array<String> = formattedDucks.map((fd) => (fd.infoLink));
+        const toGetOld: Array<String> = ducks.map((d) => (d.infoLink));
     
-        newDucks.map(async (nd: any) => {
-            delete nd[key]
-            await Duck.create(nd)
+        // Compare with current data
+        let newDucks: Array<DuckInt> = [];
+        ducks.map((d: DuckInt) => {
+            if (!toCompare.includes(d.infoLink)) {
+                newDucks.push(d)
+            }
         })
-    }
     
-    // get removed data
-    let removedDucks: Array<DuckInt> = [];
-    formattedDucks.map((fd) => {
-        if (!toGetOld.includes(fd.infoLink)) {
-            removedDucks.push(fd)
+        // send new data
+        if (newDucks.length > 0) {
+            let key: string = "_id"
+            
+            await Promise.all(
+                newDucks.map(async (nd: any) => {
+                    delete nd[key]
+                    await Duck.create(nd)
+                })
+            )
         }
-    })
     
-    // delete removed data
-    if (removedDucks.length > 0) {
-
-        removedDucks.map((rd) => {
-            Duck.deleteOne({ _id: rd._id })
+        // get removed data
+        let removedDucks: Array<DuckInt> = [];
+        formattedDucks.map((fd) => {
+            if (!toGetOld.includes(fd.infoLink)) {
+                removedDucks.push(fd)
+            }
         })
+    
+        // delete removed data
+        if (removedDucks.length > 0) {
+    
+            await Promise.all(
+                removedDucks.map(async (rd) => {
+                    await Duck.findOneAndDelete({_id: rd._id})
+                })
+            )
+        }
     }
+
+    await ops()
 
     // Close connection
     db.connection.close()
