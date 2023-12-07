@@ -52,3 +52,11 @@
         - ar -m -c -a sdsd /tmp/leek-duck_0.0.1_all.deb debian-binary control.tar.xz data.tar.xz
         - rm debian-binary control.tar.xz data.tar.xz control.tar.zst data.tar.zst
         - apt-get install /tmp/some-package.deb
+    - To run the docker image on boot: 
+        - First create your startup script @ /home/user/startup.sh, and make it executable:
+            - #!/bin/bash
+            - docker run --rm -d -p 27017:27017 -v ~/mongodb:/data/db --name mongodb mongo:4.4.13
+        - chmod +x /home/user/startup.sh
+        - Then set a crontab for it:
+            - $ crontab -e
+            - @reboot sudo /home/user/startup.sh
