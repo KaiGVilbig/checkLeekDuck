@@ -37,3 +37,18 @@
 - To run the aplication in dev mode:
     - Run `npm run dev` to run in dev mode or,
     - Run `ts-node index.ts` 
+
+## Rasberry Pi?
+- If you want to run this on a rasberyr pi the only way I found that works so far is:
+    - use Rasberry Pi OS (Latest 64 bit)
+    - curl -sSL https://get.docker.com | sh
+    - mkdir mongodb (in /home/user/)
+    - sudo docker pull mongo:4.4.13
+    - sudo docker run --rm -d -p 27017:27017 -v ~/mongodb:/data/db --name mongodb mongo:4.4.13
+    - To install .deb on RPi, Since the debian version < 12, zstd is needed to modify the .deb package.
+        - ar x leek-duck_0.0.1_all.deb
+        - zstd -d < control.tar.zst | xz > control.tar.xz
+        - zstd -d < data.tar.zst | xz > data.tar.xz
+        - ar -m -c -a sdsd /tmp/leek-duck_0.0.1_all.deb debian-binary control.tar.xz data.tar.xz
+        - rm debian-binary control.tar.xz data.tar.xz control.tar.zst data.tar.zst
+        - apt-get install /tmp/some-package.deb

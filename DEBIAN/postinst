@@ -1,6 +1,22 @@
 #!/bin/bash
 
-apt-get update
-apt-get install -y nodejs npm
-
+sudo apt-get update
+ARCHITECTURE=$(dpkg --print-architecture)
+if [ "$ARCHITECTURE" == "amd64" ]; then
+  USEARCH="x64"
+else
+  USEARCH=$ARCHITECTURE
+fi
+wget "https://nodejs.org/download/release/v18.18.2/node-v18.18.2-linux-$USEARCH.tar.gz"
+tar -zxvf node-v18.18.2-linux-$USEARCH.tar.gz
+sudo cp -r node-v18.18.2-linux-$USEARCH/{bin,include,lib,share}  /usr/
 npm install -g ts-node
+chown -R :auto-services /opt/auto/LeekDuck/
+chmod g+rwx /opt/auto/LeekDuck/
+
+systemctl daemon-reload
+systemctl enable leek-duck
+echo "After installation, please navigate to the project directory located at: /opt/auto/LeekDuck and run 'npm install' to install dependencies, then run 'systemctl start leek-duck' to start the service"
+
+# systemctl start leek-duck
+exit 0

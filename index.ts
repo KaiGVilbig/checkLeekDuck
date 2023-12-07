@@ -1,14 +1,15 @@
-const puppeteer = require('puppeteer')
+const puppeteer = require('puppeteer-core')
 import { Browser } from 'puppeteer'
 import db from './dbOps'
 import DuckInt from './duckInferface'
 const cron = require('node-cron')
 
-const basedDuck = 'https://leekduck.com'
-const duck = basedDuck + '/events'
+const basedDuck: string = 'https://leekduck.com'
+const duck: string = basedDuck + '/events'
 
-const main = async () => {
-    const browser: Browser = await puppeteer.launch({headless: true})
+const get = async () => {
+    // When building for or running on Linux, add the field executablePath: '/path/to/chromium-browser'
+    const browser: Browser = await puppeteer.launch({ headless: true})
     const page = await browser.newPage()
     await page.goto(duck)
 
@@ -33,7 +34,18 @@ const main = async () => {
     await browser.close()
 
     let formatted: Array<DuckInt> = duckData;
-    await db(formatted);
+    return formatted
+}
+
+const send = async (ducks: Array<DuckInt>) => {
+    await db(ducks);
+}
+
+
+const main = async () => {
+
+    let ducks: Array<DuckInt> = await get()
+    await send(ducks)
 }
 
 main()
