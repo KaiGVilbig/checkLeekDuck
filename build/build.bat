@@ -1,3 +1,4 @@
+cd ../
 docker build --cache-from rpmbuilder -t rpmbuilder .
 rmdir shared /s /q
 
