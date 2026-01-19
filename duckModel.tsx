@@ -1,13 +1,24 @@
-import {Schema, model, models} from 'mongoose';
+// src/duckModel.ts
+import { Schema, model, models, Document, Model, Types } from 'mongoose';
+import DuckInt from './duckInferface';
 
-const duckSchema = new Schema({
-    category: String,
-    img: String,
-    name: String,
-    date: String,
-    infoLink: String
-})
+export interface IDuck extends Document {
+    category: string;
+    img: string;
+    name: string;
+    date: string;
+    infoLink: string;
+}
 
-const Duck = models.Duck || model('Duck', duckSchema)
+const duckSchema = new Schema<IDuck>({
+    category: { type: String, required: true },
+    img: { type: String, required: true },
+    name: { type: String, required: true },
+    date: { type: String, required: true },
+    infoLink: { type: String, required: true },
+});
 
-export default Duck
+const Duck: Model<IDuck> = models.Duck || model<IDuck>('Duck', duckSchema);
+
+export default Duck;
+

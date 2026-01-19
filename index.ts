@@ -1,70 +1,42 @@
-import puppeteer, { Browser } from "puppeteer"
-import db from "./dbOps"
-import DuckInt from "./duckInferface"
-import cron from "node-cron"
+// src/index.ts
+import puppeteer, { Browser } from 'puppeteer';
+import dbOps from './dbOps';
+import DuckInt from './duckInferface';
+import * as cron from 'node-cron';
 
-const basedDuck = "https://leekduck.com"
-const duck = basedDuck + "/events"
+const BASE_URL = 'https://leekduck.com';
+const EVENTS_URL = BASE_URL + '/events';
 
-// Read MongoDB URL from environment variable, fallback if needed
-const MONGO_URL = process.env.MONGO_URL || "mongodb://localhost:27017/leekduck"
+const getDuckData = async (): Promise<DuckInt[]> => {
+    const browser: Browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+    const page = await browser.newPage();
+    await page.goto(EVENTS_URL);
 
-const get = async (): Promise<DuckInt[]> => {
-  console.log("Starting scrape...")
+    const ducks: DuckInt[] = await page.evaluate((base: string) => {
+        const elements = Array.from(document.querySelectorAll('.event-item-link:not(.hide-event)'));
+        return elements.map(d => ({
+            category: (d.querySelector('div p') as HTMLElement).innerText,
+            img: (d.querySelector('img')?.getAttribute('src')) ?? '',
+            name: (d.querySelector('div.event-text h2') as HTMLElement).innerText,
+            date: (d.querySelector('div.event-text p') as HTMLElement).innerText,
+            infoLink: base + d.getAttribute('href')
+        })) as DuckInt[];
+    }, BASE_URL);
 
-  const browser: Browser = await puppeteer.launch({ headless: true })
-  const page = await browser.newPage()
-  await page.goto(duck)
+    await browser.close();
+    return ducks;
+};
 
-  const duckData: DuckInt[] = await page.evaluate((basedDuck) => {
-    const ducks = Array.from(document.querySelectorAll(".event-item-link:not(.hide-event)"))
+const run = async () => {
+    const ducks = await getDuckData();
+    await dbOps(ducks);
+};
 
-    const leek: DuckInt[] = ducks.map((d: any) => ({
-      _id: "",
-      category: d.querySelector("div p")?.innerText || "",
-      img: d.querySelector("img")?.getAttribute("src") || "",
-      name: d.querySelector("div.event-text h2")?.innerText || "",
-      date: d.querySelector("div.event-text p")?.innerText || "",
-      infoLink: basedDuck + (d.getAttribute("href") || ""),
-    }))
+// Run once immediately
+run();
 
-    const filtered: DuckInt[] = leek.filter((d: DuckInt) => {
-      return d.category !== "GO Battle League" && !d.name.includes("Unannounced")
-    })
+// Schedule daily at 7:00am local time
+cron.schedule('0 7 * * *', () => {
+    run();
+});
 
-    return filtered
-  }, basedDuck)
-
-  await browser.close()
-  return duckData
-}
-
-const send = async (ducks: DuckInt[]) => {
-  console.log(`Sending ${ducks.length} events to MongoDB at ${MONGO_URL}`)
-  await db(ducks)
-}
-
-const main = async () => {
-  try {
-    const ducks = await get()
-    await send(ducks)
-    console.log("Scrape completed successfully.")
-  } catch (err) {
-    console.error("Scrape failed:", err)
-  }
-}
-
-// Run immediately when container starts
-main()
-
-// Schedule daily job at 7:00 AM server time
-cron.schedule(
-  "0 7 * * *",
-  () => {
-    console.log("Starting scheduled scrape...")
-    main()
-  },
-  {
-    timezone: "Etc/Local", // uses container/server local time
-  }
-)

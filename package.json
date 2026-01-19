@@ -4,6 +4,7 @@
   "description": "Checks leek duck once a day for events in pokemon go",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "test": "test",
     "dev": "ts-node index.ts"
   },
@@ -13,7 +14,7 @@
     "@types/node": "^20.9.0",
     "mongoose": "^8.0.1",
     "node-cron": "^3.0.3",
-    "puppeteer": "^21.5.2",
+    "puppeteer": "^24.35.0",
     "puppeteer-core": "^21.5.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"

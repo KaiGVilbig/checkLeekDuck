@@ -5,3 +5,4 @@ services:
     restart: unless-stopped
     environment:
       - MONGO_URL=mongodb://mongodb:27017/leekduck
+    network_mode: host

@@ -1,8 +1,10 @@
+// src/duckInterface.ts
 export default interface DuckInt {
-    _id: String,
-    category: String,
-    img: String,
-    name: String,
-    date: String,
-    infoLink: String
+    _id: string | undefined; // optional at runtime, TS allows undefined
+    category: string;
+    img: string;
+    name: string;
+    date: string;
+    infoLink: string;
 }
+
