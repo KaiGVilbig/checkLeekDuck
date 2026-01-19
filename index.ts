@@ -1,63 +1,70 @@
-const puppeteer = require('puppeteer')
-import { Browser } from 'puppeteer'
-import db from './dbOps'
-import DuckInt from './duckInferface'
-const cron = require('node-cron')
+import puppeteer, { Browser } from "puppeteer"
+import db from "./dbOps"
+import DuckInt from "./duckInferface"
+import cron from "node-cron"
 
-const basedDuck: string = 'https://leekduck.com'
-const duck: string = basedDuck + '/events'
+const basedDuck = "https://leekduck.com"
+const duck = basedDuck + "/events"
 
-const get = async () => {
-    // When building for or running on Linux, add the field executablePath: '/path/to/chromium-browser'
-    const browser: Browser = await puppeteer.launch({ headless: true})
-    const page = await browser.newPage()
-    await page.goto(duck)
+// Read MongoDB URL from environment variable, fallback if needed
+const MONGO_URL = process.env.MONGO_URL || "mongodb://localhost:27017/leekduck"
 
-    const duckData: Array<DuckInt> = await page.evaluate((basedDuck) => {
-        const ducks = Array.from(document.querySelectorAll('.event-item-link:not(.hide-event)'))
+const get = async (): Promise<DuckInt[]> => {
+  console.log("Starting scrape...")
 
-        const leek: Array<DuckInt> = ducks.map((d: any) => {
-            const formatted: DuckInt = {
-                _id: "",
-                category: d.querySelector('div p').innerText,
-                img: d.querySelector('img').getAttribute('src'),
-                name: d.querySelector('div.event-text h2').innerText,
-                date: d.querySelector('div.event-text p').innerText,
-                infoLink: basedDuck + d.getAttribute('href')
-            }
-            return formatted;
-        })
+  const browser: Browser = await puppeteer.launch({ headless: true })
+  const page = await browser.newPage()
+  await page.goto(duck)
 
-        const filtered: Array<DuckInt> = leek.filter((d: DuckInt) => {
-            if (d.category != 'GO Battle League' && !d.name.includes('Unannounced')) return d;
-        })
+  const duckData: DuckInt[] = await page.evaluate((basedDuck) => {
+    const ducks = Array.from(document.querySelectorAll(".event-item-link:not(.hide-event)"))
 
-        return filtered
-    }, basedDuck)
+    const leek: DuckInt[] = ducks.map((d: any) => ({
+      _id: "",
+      category: d.querySelector("div p")?.innerText || "",
+      img: d.querySelector("img")?.getAttribute("src") || "",
+      name: d.querySelector("div.event-text h2")?.innerText || "",
+      date: d.querySelector("div.event-text p")?.innerText || "",
+      infoLink: basedDuck + (d.getAttribute("href") || ""),
+    }))
 
-    await browser.close()
+    const filtered: DuckInt[] = leek.filter((d: DuckInt) => {
+      return d.category !== "GO Battle League" && !d.name.includes("Unannounced")
+    })
 
-    let formatted: Array<DuckInt> = duckData;
-    return formatted
+    return filtered
+  }, basedDuck)
+
+  await browser.close()
+  return duckData
 }
 
-const send = async (ducks: Array<DuckInt>) => {
-    await db(ducks);
+const send = async (ducks: DuckInt[]) => {
+  console.log(`Sending ${ducks.length} events to MongoDB at ${MONGO_URL}`)
+  await db(ducks)
 }
-
 
 const main = async () => {
-
-    let ducks: Array<DuckInt> = await get()
+  try {
+    const ducks = await get()
     await send(ducks)
+    console.log("Scrape completed successfully.")
+  } catch (err) {
+    console.error("Scrape failed:", err)
+  }
 }
 
+// Run immediately when container starts
 main()
-/**
- * Scheduled job to execute once every day at 7:00am local time, whatever timezone the system is online
- * To change the timezone to a specific timezone, at the bottom of the cron funciton where the }) is located, 
- * replace the }) with }, { timezone: 'Your/Timezone' })
- */
-cron.schedule('0 7 * * *', () => {
+
+// Schedule daily job at 7:00 AM server time
+cron.schedule(
+  "0 7 * * *",
+  () => {
+    console.log("Starting scheduled scrape...")
     main()
-})
+  },
+  {
+    timezone: "Etc/Local", // uses container/server local time
+  }
+)

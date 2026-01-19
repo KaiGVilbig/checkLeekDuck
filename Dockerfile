@@ -1,15 +1,24 @@
-FROM centos
+# Use official Node.js image
+FROM node:22-slim
 
-RUN dnf --disablerepo '*' --enablerepo extras swap centos-linux-repos centos-stream-repos -y
-RUN dnf distro-sync -y
+# Set working directory
+WORKDIR /app
 
-RUN dnf update -y
-RUN dnf upgrade -y
-RUN dnf install rpm-build rpm-devel rpmdevtools dos2unix -y
-RUN useradd builder
+# Copy package.json & tsconfig if using TypeScript
+COPY package*.json ./
+COPY tsconfig.json ./
 
-USER builder
+# Install dependencies
+RUN npm install
 
-COPY /buildRPM.sh /
+# Copy the rest of the project
+COPY . .
 
-ENTRYPOINT /buildRPM.sh
+# Build TS (if needed)
+RUN npx tsc || echo "No TypeScript build needed"
+
+# Expose a port if needed (not required here since it's a scraper)
+# EXPOSE 3000
+
+# Default command runs the scraper
+CMD ["npx", "ts-node", "index.ts"]
