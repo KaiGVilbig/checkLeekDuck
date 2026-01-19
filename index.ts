@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer-core')
+const puppeteer = require('puppeteer')
 import { Browser } from 'puppeteer'
 import db from './dbOps'
 import DuckInt from './duckInferface'
@@ -20,7 +20,7 @@ const get = async () => {
             const formatted: DuckInt = {
                 _id: "",
                 category: d.querySelector('div p').innerText,
-                img: basedDuck + d.querySelector('img').getAttribute('src'),
+                img: d.querySelector('img').getAttribute('src'),
                 name: d.querySelector('div.event-text h2').innerText,
                 date: d.querySelector('div.event-text p').innerText,
                 infoLink: basedDuck + d.getAttribute('href')
@@ -28,7 +28,11 @@ const get = async () => {
             return formatted;
         })
 
-        return leek
+        const filtered: Array<DuckInt> = leek.filter((d: DuckInt) => {
+            if (d.category != 'GO Battle League' && !d.name.includes('Unannounced')) return d;
+        })
+
+        return filtered
     }, basedDuck)
 
     await browser.close()
